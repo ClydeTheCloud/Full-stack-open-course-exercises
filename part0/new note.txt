@@ -1,0 +1,12 @@
+note over browser:
+user enters their message into the form and submits it
+end note
+
+browser->server: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note
+note over server: server saves new note to the database
+end note
+server-->browser: 302 response code
+note over browser:
+browser recieves server response and reloads
+page to load note-list with new entry
+end note

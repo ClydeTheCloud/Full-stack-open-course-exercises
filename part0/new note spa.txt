@@ -1,0 +1,8 @@
+note over browser:
+user enters their message into the form and submits it
+end note
+note over browser:
+javascript adds new note to list without reloading page
+end note
+browser->server: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note_spa
+server-->browser: 201 created

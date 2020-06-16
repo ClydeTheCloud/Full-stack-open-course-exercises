@@ -1,7 +1,12 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 
+app.use(cors());
+
 app.use(express.json());
+
+app.use(express.static('build'));
 
 var morgan = require('morgan');
 
@@ -9,12 +14,7 @@ morgan.token('req-body', function (req, res) {
 	return JSON.stringify(req.body);
 });
 
-app.use(
-	morgan(
-		':method :url :status :res[content-length] - :response-time ms :req-body'
-	)
-);
-// app.use(morgan('tiny'));
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :req-body'));
 
 let persons = [
 	{
@@ -50,9 +50,7 @@ const generateId = () => {
 };
 
 app.get('/info', (req, res) => {
-	const info = `The phonebook currently has ${
-		persons.length
-	} contacts. This request processed at ${new Date()}.`;
+	const info = `The phonebook currently has ${persons.length} contacts. This request processed at ${new Date()}.`;
 
 	res.json(info);
 });
@@ -63,7 +61,7 @@ app.get('/api/persons', (req, res) => {
 
 app.get('/api/persons/:id', (req, res) => {
 	const id = Number(req.params.id);
-	const person = persons.find(person => person.id === id);
+	const person = persons.find((person) => person.id === id);
 	if (person) {
 		res.json(person);
 	} else {
@@ -75,8 +73,8 @@ app.delete('/api/persons/:id', (req, res) => {
 	const id = Number(req.params.id);
 	// console.log(req.body);
 
-	if (persons.find(person => person.id === id)) {
-		persons = persons.filter(person => person.id !== id);
+	if (persons.find((person) => person.id === id)) {
+		persons = persons.filter((person) => person.id !== id);
 		res.status(204).end();
 	} else {
 		res.status(404).end();
@@ -90,10 +88,9 @@ app.post('/api/persons/', (req, res) => {
 
 	if (!body.number || !body.name) {
 		return res.status(400).json({
-			error:
-				'Important data is missing! Both name and number must be included!',
+			error: 'Important data is missing! Both name and number must be included!',
 		});
-	} else if (persons.find(p => p.name === body.name)) {
+	} else if (persons.find((p) => p.name === body.name)) {
 		return res.status(400).json({
 			error: 'Contact with this name already exists on the server.',
 		});
@@ -111,7 +108,7 @@ app.post('/api/persons/', (req, res) => {
 	// console.log(persons);
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
 	console.log(`Phonebook app server is now running on port ${PORT}`);
 });

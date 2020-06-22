@@ -26,38 +26,28 @@ const App = () => {
 	}, []);
 
 	const getEntries = () => {
-		phonebook.get().then(response => {
+		phonebook.get().then((response) => {
 			setPersons(response.data);
 		});
 	};
 
-	const addEntry = event => {
+	const addEntry = (event) => {
 		event.preventDefault();
-		if (persons.some(person => person.name === newName)) {
-			if (
-				window.confirm(
-					`${newName} already on the list. Do you want to update phone number?`
-				)
-			) {
+		if (persons.some((person) => person.name === newName)) {
+			if (window.confirm(`${newName} already on the list. Do you want to update phone number?`)) {
 				const updatedEntry = {
-					...persons.find(person => person.name === newName),
+					...persons.find((person) => person.name === newName),
 					number: newNumber,
 				};
 				phonebook
 					.update(updatedEntry.id, updatedEntry)
-					.then(response => {
-						setPersons(
-							persons.map(person =>
-								person.id === response.data.id
-									? updatedEntry
-									: person
-							)
-						);
+					.then((response) => {
+						setPersons(persons.map((person) => (person.id === response.data.id ? updatedEntry : person)));
 					})
-					.catch(error => {
+					.catch((error) => {
 						console.log(error);
 						messageUpdater(
-							`Updating contact ${newName} failed. It seems like contact was already removed from the server.`,
+							`Updating contact ${newName} failed. ${error.response.data.error ? error.response.data.error : 'Please refresh the page.'}`,
 							'error'
 						);
 						setNewName('');
@@ -73,33 +63,36 @@ const App = () => {
 			}
 		}
 		const newEntry = { name: newName, number: newNumber };
-		phonebook.create(newEntry).then(response => {
-			setPersons(persons.concat(response.data));
-			messageUpdater(`Contact "${newName}" was added.`, 'success');
-			setNewName('');
-			setNewNumber('');
-		});
+		phonebook
+			.create(newEntry)
+			.then((response) => {
+				setPersons(persons.concat(response.data));
+				messageUpdater(`Contact "${newName}" was added.`, 'success');
+				setNewName('');
+				setNewNumber('');
+			})
+			.catch((error) => {
+				console.log(error);
+				console.log(error.response.data.error);
+				messageUpdater(`Error occurred: ${error.response.data.error}`, 'error');
+			});
 	};
 
-	const removeEntry = person => {
-		if (
-			window.confirm(
-				`Are you sure you want to delete ${person.name} from your phonebook?`
-			)
-		) {
+	const removeEntry = (person) => {
+		if (window.confirm(`Are you sure you want to delete ${person.name} from your phonebook?`)) {
 			phonebook.remove(person.id).then(() => getEntries());
 		}
 	};
 
-	const handleNameInput = event => {
+	const handleNameInput = (event) => {
 		setNewName(event.target.value);
 	};
 
-	const handleNumberInput = event => {
+	const handleNumberInput = (event) => {
 		setNewNumber(event.target.value);
 	};
 
-	const handleFilterInput = event => {
+	const handleFilterInput = (event) => {
 		setFilter(event.target.value);
 	};
 
@@ -109,13 +102,7 @@ const App = () => {
 			<Filter handleFilterInput={handleFilterInput} filter={filter} />
 			<br />
 			<Messanger message={message.message} state={message.state} />
-			<Form
-				addEntry={addEntry}
-				handleNameInput={handleNameInput}
-				newName={newName}
-				handleNumberInput={handleNumberInput}
-				newNumber={newNumber}
-			/>
+			<Form addEntry={addEntry} handleNameInput={handleNameInput} newName={newName} handleNumberInput={handleNumberInput} newNumber={newNumber} />
 			<h2>Numbers</h2>
 			<Names persons={persons} filter={filter} remove={removeEntry} />
 		</div>

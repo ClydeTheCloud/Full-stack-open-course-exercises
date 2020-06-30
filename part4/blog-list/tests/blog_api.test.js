@@ -36,6 +36,31 @@ test('blogs are returned as json', async () => {
 		.expect('Content-type', /application\/json/);
 });
 
+test('id property is present in blogs', async () => {
+	const blogs = await api.get('/api/blogs/');
+
+	blogs.body.forEach(blog => {
+		expect(blog.id).toBeDefined();
+	});
+});
+
+// WORK ON THIS
+test('posting blog is successful', async () => {
+	const newBlog = {
+		title: 'Test 3',
+		author: 'Tester number 2',
+		url: 'http://www.test.tester/blog/3',
+		likes: 6,
+	};
+
+	await api
+		.post('/api/blogs/')
+		.send(newBlog)
+		.expect(200)
+		.expect('Content-type', /application\/json/);
+});
+// WORK ON THIS
+
 afterAll(() => {
 	mongoose.connection.close();
 });

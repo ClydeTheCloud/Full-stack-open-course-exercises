@@ -31,12 +31,23 @@ const initialUsers = [
 
 const getBlogsFromDB = async () => {
 	const response = await Blog.find({});
-	return response.map((r) => r.toJSON());
+	return response.map(r => r.toJSON());
 };
 
 const getUsersFromDB = async () => {
 	const response = await User.find({});
-	return response.map((r) => r.toJSON());
+	return response.map(r => r.toJSON());
 };
 
-module.exports = { initialBlogs, getBlogsFromDB, initialUsers, getUsersFromDB };
+const loginInfo = {
+	login: 'TESTER1',
+	password: '111',
+};
+
+module.exports = {
+	initialBlogs,
+	getBlogsFromDB,
+	initialUsers,
+	getUsersFromDB,
+	loginInfo,
+};

@@ -1,6 +1,3 @@
-// TODO add test for checking that invalid users are not created and suited status code returned
-// TODO add test for checking that duplicate users are not created
-// TODO add test for checking that valid user can be created
 // TODO Test for login with valid credentials
 // TODO Test for login with invalid credentials
 
@@ -35,7 +32,7 @@ describe('Users API tests', () => {
 	test('users are valid', async () => {
 		const allUsers = await helpers.getUsersFromDB();
 
-		allUsers.forEach((user) => {
+		allUsers.forEach(user => {
 			expect(user).toHaveProperty('login');
 			expect(user).toHaveProperty('displayName');
 			expect(user).toHaveProperty('blogs');
@@ -44,7 +41,21 @@ describe('Users API tests', () => {
 		expect(allUsers).toHaveLength(helpers.initialUsers.length);
 	});
 
-	test('users with invalid credentials are not created', () => {
+	test('valid users are created', async () => {
+		const validUser = {
+			login: 'ThisIsFine',
+			displayName: 'Valid User',
+			password: '1234567890',
+		};
+
+		await api.post('/api/users/').send(validUser).expect(200);
+
+		const allUsersAfterTest = await helpers.getUsersFromDB();
+
+		expect(allUsersAfterTest).toHaveLength(helpers.initialUsers.length + 1);
+	});
+
+	test('users with invalid credentials are not created', async () => {
 		const invalidUsers = {
 			shortPass: {
 				login: 'TESTER3',
@@ -67,5 +78,47 @@ describe('Users API tests', () => {
 				password: '111',
 			},
 		};
+
+		await api.post('/api/users/').send(invalidUsers.shortPass).expect(422);
+
+		await api.post('/api/users/').send(invalidUsers.shortLogin).expect(422);
+
+		await api
+			.post('/api/users/')
+			.send(invalidUsers.invalidPass)
+			.expect(422);
+
+		await api
+			.post('/api/users/')
+			.send(invalidUsers.invalidLogin)
+			.expect(400);
+
+		const allUsersAfterTest = await helpers.getUsersFromDB();
+
+		expect(allUsersAfterTest).toHaveLength(helpers.initialUsers.length);
+	});
+
+	test('login of users should be unique', async () => {
+		const duplicatedUsers = [
+			{
+				login: 'DUPLICATE',
+				displayName: 'First of his name',
+				password: '111',
+			},
+			{
+				login: 'DUPLICATE',
+				displayName: 'duplicated',
+				password: '111',
+			},
+		];
+
+		await api.post('/api/users/').send(duplicatedUsers[0]).expect(200);
+		await api.post('/api/users/').send(duplicatedUsers[1]).expect(400);
+
+		const allUsersAfterTest = await helpers.getUsersFromDB();
+
+		expect(allUsersAfterTest).toHaveLength(helpers.initialUsers.length + 1);
 	});
 });
+
+describe('login API tests', () => {});

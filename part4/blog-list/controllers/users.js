@@ -7,15 +7,15 @@ usersRouter.post('/', async (req, res) => {
 
 	const passRegExp = /^[A-Za-z0-9]+$/;
 
-	if (body.password < 2) {
+	if (body.password.length < 3) {
 		return res.status(422).json({
 			error: 'Password too short. Minimum required length is 3.',
 		});
-	} else if (body.login < 2) {
+	} else if (body.login.length < 3) {
 		return res.status(422).json({
 			error: 'Login too short. Minimum required length is 3.',
 		});
-	} else if (body.password.match(passRegExp)) {
+	} else if (!body.password.match(passRegExp)) {
 		return res.status(422).json({
 			error: 'Invalid password. Only letters and numbers are allowed.',
 		});
@@ -41,7 +41,7 @@ usersRouter.get('/', async (req, res) => {
 		title: 1,
 		author: 1,
 	});
-	res.json(allUsers.map((u) => u.toJSON()));
+	res.json(allUsers.map(u => u.toJSON()));
 });
 
 module.exports = usersRouter;

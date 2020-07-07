@@ -1,4 +1,3 @@
-// TODO Test for login with valid credentials
 // TODO Test for login with invalid credentials
 
 const supertest = require('supertest');
@@ -32,7 +31,7 @@ describe('Users API tests', () => {
 	test('users are valid', async () => {
 		const allUsers = await helpers.getUsersFromDB();
 
-		allUsers.forEach(user => {
+		allUsers.forEach((user) => {
 			expect(user).toHaveProperty('login');
 			expect(user).toHaveProperty('displayName');
 			expect(user).toHaveProperty('blogs');
@@ -83,15 +82,9 @@ describe('Users API tests', () => {
 
 		await api.post('/api/users/').send(invalidUsers.shortLogin).expect(422);
 
-		await api
-			.post('/api/users/')
-			.send(invalidUsers.invalidPass)
-			.expect(422);
+		await api.post('/api/users/').send(invalidUsers.invalidPass).expect(422);
 
-		await api
-			.post('/api/users/')
-			.send(invalidUsers.invalidLogin)
-			.expect(400);
+		await api.post('/api/users/').send(invalidUsers.invalidLogin).expect(400);
 
 		const allUsersAfterTest = await helpers.getUsersFromDB();
 
@@ -121,4 +114,25 @@ describe('Users API tests', () => {
 	});
 });
 
-describe('login API tests', () => {});
+describe('login API tests', () => {
+	test('login operation with valid credentials is successful', async () => {
+		const response = await api.post('/api/login/').send(helpers.loginInfo);
+
+		expect(response.body).toHaveProperty('token');
+		expect(response.body).toHaveProperty('login');
+		expect(response.body).toHaveProperty('displayName');
+	});
+
+	test('login operation with invalid credentials is not successful', async () => {
+		const wrongLogin = {
+			login: 'NONEXISTING',
+			password: '111',
+		};
+		const wrongPassword = {
+			login: 'TESTER1',
+			password: 'NONEXISTING',
+		};
+		await api.post('/api/login/').send(wrongLogin).expect(401);
+		await api.post('/api/login/').send(wrongPassword).expect(401);
+	});
+});

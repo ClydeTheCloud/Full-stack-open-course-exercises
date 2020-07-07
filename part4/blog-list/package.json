@@ -6,7 +6,7 @@
 	"scripts": {
 		"start": "cross-env NODE_ENV=production node index.js",
 		"dev": "cross-env NODE_ENV=development nodemon index.js",
-		"test": "cross-env NODE_ENV=test jest --verbose --runInBand -t blog"
+		"test": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles"
 	},
 	"author": "",
 	"license": "ISC",
@@ -28,6 +28,6 @@
 	},
 	"jest": {
 		"testEnvironment": "node",
-		"testTimeout": 10000
+		"testTimeout": 15000
 	}
 }

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import Blog from './components/Blog';
+import Blog from './components/BlogsComponent';
 import Messanger from './components/Messanger';
 import blogService from './services/blogs';
-import loginService from './services/login';
+import BlogsComponent from './components/BlogsComponent';
+import LoginForm from './components/LoginForm';
+import Togglable from './components/Togglable';
 
 const App = () => {
 	const [blogs, setBlogs] = useState([]);
-	const [login, setLogin] = useState('');
-	const [password, setPassword] = useState('');
 	const [user, setUser] = useState(null);
 	const [message, setMessage] = useState({ message: '', state: 'inactive' });
 
@@ -22,66 +22,31 @@ const App = () => {
 		blogService.getAll().then(blogs => setBlogs(blogs));
 	}, []);
 
-	const handleLogin = async event => {
-		event.preventDefault();
-		try {
-			const user = await loginService.login({ login, password });
-
-			setUser(user);
-			setLogin('');
-			setPassword('');
-		} catch (exception) {
-			messageUpdater('Wrong login or password', 'error');
+	useEffect(() => {
+		if (window.localStorage.getItem('blogUser')) {
+			const parsedUser = JSON.parse(
+				window.localStorage.getItem('blogUser')
+			);
+			setUser(parsedUser);
+			blogService.setToken(parsedUser);
 		}
-	};
-
-	const loginComponent = () => {
-		return (
-			<form onSubmit={handleLogin}>
-				<label>
-					Login:
-					<input
-						type="text"
-						value={login}
-						name="Login"
-						onChange={event => {
-							setLogin(event.target.value);
-						}}
-					></input>
-				</label>
-				<br />
-				<label>
-					Password:
-					<input
-						type="password"
-						value={password}
-						name="password"
-						onChange={event => {
-							setPassword(event.target.value);
-						}}
-					></input>
-				</label>
-				<br />
-				<button type="submit">login</button>
-			</form>
-		);
-	};
-
-	const blogsComponent = () => {
-		return (
-			<>
-				{blogs.map(blog => (
-					<Blog key={blog.id} blog={blog} />
-				))}
-			</>
-		);
-	};
+	}, []);
 
 	return (
 		<div>
-			<h2>blogs</h2>
+			<h2>Blogs</h2>
 			<Messanger message={message.message} state={message.state} />
-			{user === null ? loginComponent() : blogsComponent()}
+			{user === null ? (
+				<LoginForm setUser={setUser} messageUpdater={messageUpdater} />
+			) : (
+				<BlogsComponent
+					user={user}
+					setUser={setUser}
+					messageUpdater={messageUpdater}
+					blogs={blogs}
+					setBlogs={setBlogs}
+				/>
+			)}
 		</div>
 	);
 };

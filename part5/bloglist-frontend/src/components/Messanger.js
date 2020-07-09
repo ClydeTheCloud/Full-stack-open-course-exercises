@@ -1,4 +1,5 @@
 import React from 'react';
+import './Messanger.css';
 
 const Messanger = ({ message, state }) => {
 	if (state === 'inactive') {

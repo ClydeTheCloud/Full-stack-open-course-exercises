@@ -1,36 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import Blog from './components/BlogsComponent';
-import Messanger from './components/Messanger';
-import blogService from './services/blogs';
-import BlogsComponent from './components/BlogsComponent';
-import LoginForm from './components/LoginForm';
-import Togglable from './components/Togglable';
+import React, { useState, useEffect } from 'react'
+import Messanger from './components/Messanger'
+import blogService from './services/blogs'
+import BlogsComponent from './components/BlogsComponent'
+import LoginForm from './components/LoginForm'
 
 const App = () => {
-	const [blogs, setBlogs] = useState([]);
-	const [user, setUser] = useState(null);
-	const [message, setMessage] = useState({ message: '', state: 'inactive' });
+	const [blogs, setBlogs] = useState([])
+	const [user, setUser] = useState(null)
+	const [message, setMessage] = useState({ message: '', state: 'inactive' })
 
 	function messageUpdater(message, state) {
-		setMessage({ message, state });
+		setMessage({ message, state })
 		setTimeout(() => {
-			setMessage({ message: '', state: 'inactive' });
-		}, 5000);
+			setMessage({ message: '', state: 'inactive' })
+		}, 5000)
 	}
 
 	useEffect(() => {
-		blogService.getAll().then(blogs => setBlogs(blogs));
-	}, []);
+		blogService.getAll().then(blogs => setBlogs(blogs))
+	}, [])
 
 	useEffect(() => {
 		if (window.localStorage.getItem('blogUser')) {
 			const parsedUser = JSON.parse(
 				window.localStorage.getItem('blogUser')
-			);
-			setUser(parsedUser);
-			blogService.setToken(parsedUser);
+			)
+			setUser(parsedUser)
+			blogService.setToken(parsedUser)
 		}
-	}, []);
+	}, [])
 
 	return (
 		<div>
@@ -48,7 +46,7 @@ const App = () => {
 				/>
 			)}
 		</div>
-	);
-};
+	)
+}
 
-export default App;
+export default App

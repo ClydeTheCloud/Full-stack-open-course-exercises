@@ -35,6 +35,10 @@ blogsRouter.post('/', async (req, res) => {
 
 	user.blogs = user.blogs.concat(savedBlog._id);
 	await user.save();
+	savedBlog.populate('creator', {
+		login: 1,
+		displayName: 1,
+	});
 
 	res.status(201).json(savedBlog.toJSON());
 });
@@ -43,7 +47,6 @@ blogsRouter.delete('/:id', async (req, res) => {
 	if (!req.token) {
 		return res.status(401).json({ error: 'token missing' });
 	}
-
 	const decodedToken = jwt.verify(req.token, process.env.SECRET);
 	if (!decodedToken) {
 		return res.status(401).json({ error: 'token invalid' });
@@ -67,6 +70,9 @@ blogsRouter.put('/:id', async (req, res) => {
 
 	const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, blog, {
 		new: true,
+	}).populate('creator', {
+		login: 1,
+		displayName: 1,
 	});
 
 	res.json(updatedBlog.toJSON());

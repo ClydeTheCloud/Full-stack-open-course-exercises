@@ -1,12 +1,18 @@
-import React from 'react';
-import './Messanger.css';
+import React from 'react'
+import PropTypes from 'prop-types'
+import './Messanger.css'
 
 const Messanger = ({ message, state }) => {
 	if (state === 'inactive') {
-		return null;
+		return null
 	}
 
-	return <div className={'message ' + state}>{message}</div>;
-};
+	return <div className={'message ' + state}>{message}</div>
+}
 
-export default Messanger;
+Messanger.propTypes = {
+	message: PropTypes.string.isRequired,
+	state: PropTypes.string.isRequired,
+}
+
+export default Messanger

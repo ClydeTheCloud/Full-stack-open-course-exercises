@@ -1,46 +1,31 @@
-import React, { useState } from 'react'
-import blogService from '../services/blogs'
-import PropTypes from 'prop-types'
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
-const AddBlogForm = ({ messageUpdater, blogs, setBlogs, toggleVisibility }) => {
-	const [title, setTitle] = useState('')
-	const [author, setAuthor] = useState('')
-	const [url, setUrl] = useState('')
+const AddBlogForm = ({ handleAddBlog }) => {
+	const [title, setTitle] = useState('');
+	const [author, setAuthor] = useState('');
+	const [url, setUrl] = useState('');
 
-	const handleAddBlog = async event => {
-		event.preventDefault()
-		try {
-			const createdBlog = await blogService.create({
-				title,
-				author,
-				url,
-			})
-			messageUpdater(
-				`Created blog entry "${createdBlog.title}" by ${createdBlog.author}`,
-				'success'
-			)
-			toggleVisibility()
-			setTitle('')
-			setTitle('')
-			setUrl('')
-			setBlogs(blogs.concat(createdBlog))
-		} catch (exception) {
-			console.log(exception)
-			messageUpdater('Creating new blog failed, try again.', 'error')
-		}
-	}
+	const submitHandler = event => {
+		event.preventDefault();
+		handleAddBlog(title, author, url);
+		setTitle('');
+		setTitle('');
+		setUrl('');
+	};
 
 	return (
-		<form onSubmit={handleAddBlog}>
+		<form onSubmit={submitHandler}>
 			<h3>Add new blog:</h3>
 			<label>
 				Title:
 				<input
+					id="title-input"
 					type="text"
 					value={title}
 					name="title"
 					onChange={event => {
-						setTitle(event.target.value)
+						setTitle(event.target.value);
 					}}
 				></input>
 			</label>
@@ -48,11 +33,12 @@ const AddBlogForm = ({ messageUpdater, blogs, setBlogs, toggleVisibility }) => {
 			<label>
 				Author:
 				<input
+					id="author-input"
 					type="text"
 					value={author}
 					name="author"
 					onChange={event => {
-						setAuthor(event.target.value)
+						setAuthor(event.target.value);
 					}}
 				></input>
 			</label>
@@ -60,26 +46,24 @@ const AddBlogForm = ({ messageUpdater, blogs, setBlogs, toggleVisibility }) => {
 			<label>
 				URL:
 				<input
+					id="url-input"
 					type="text"
 					value={url}
 					name="url"
 					onChange={event => {
-						setUrl(event.target.value)
+						setUrl(event.target.value);
 					}}
 				></input>
 			</label>
 			<br />
 			<button type="submit">create</button>
 		</form>
-	)
-}
+	);
+};
 
 //messageUpdater, blogs, setBlogs, toggleVisibility
 AddBlogForm.propTypes = {
-	messageUpdater: PropTypes.func.isRequired,
-	blogs: PropTypes.array.isRequired,
-	setBlogs: PropTypes.func.isRequired,
-	toggleVisibility: PropTypes.func.isRequired,
-}
+	handleAddBlog: PropTypes.func.isRequired,
+};
 
-export default AddBlogForm
+export default AddBlogForm;

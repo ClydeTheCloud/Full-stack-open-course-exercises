@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 
 const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
-	const [blogVisibility, setBlogVisibility] = useState(false);
+	const [blogVisibility, setBlogVisibility] = useState(false)
 
 	const blogVisibilityHandler = () => {
-		setBlogVisibility(!blogVisibility);
-	};
+		setBlogVisibility(!blogVisibility)
+	}
 
 	const style = {
 		flex: {
@@ -22,13 +22,13 @@ const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
 			padding: 10,
 			margin: 5,
 		},
-	};
+	}
 
 	const buttonRender = () => (
 		<button onClick={blogVisibilityHandler} className="show-and-hide">
 			{blogVisibility ? 'Hide' : 'Show'} blog info.
 		</button>
-	);
+	)
 
 	const deleteRender = () => {
 		if (blog.creator.login === user.login) {
@@ -36,14 +36,14 @@ const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
 				<button
 					style={{ color: 'white', backgroundColor: 'red' }}
 					onClick={() => {
-						deleteBlog(blog);
+						deleteBlog(blog)
 					}}
 				>
 					delete
 				</button>
-			);
+			)
 		}
-	};
+	}
 
 	const showInfo = () => (
 		<>
@@ -52,7 +52,7 @@ const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
 			Likes: {blog.likes}{' '}
 			<button
 				onClick={() => {
-					likeBlog(blog);
+					likeBlog(blog)
 				}}
 			>
 				Like
@@ -62,7 +62,7 @@ const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
 			<br />
 			{deleteRender()}
 		</>
-	);
+	)
 
 	return (
 		<div style={style.appearance} className="blog">
@@ -71,14 +71,14 @@ const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
 			</div>
 			{blogVisibility ? showInfo() : null}
 		</div>
-	);
-};
+	)
+}
 
 Blog.propTypes = {
 	blog: PropTypes.object.isRequired,
 	likeBlog: PropTypes.func.isRequired,
 	user: PropTypes.object.isRequired,
 	deleteBlog: PropTypes.func.isRequired,
-};
+}
 
-export default Blog;
+export default Blog

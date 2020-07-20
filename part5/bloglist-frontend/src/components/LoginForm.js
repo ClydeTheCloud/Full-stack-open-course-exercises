@@ -27,6 +27,7 @@ const LoginForm = ({ setUser, messageUpdater }) => {
 			<label>
 				Login:
 				<input
+					id="login"
 					type="text"
 					value={login}
 					name="Login"
@@ -39,6 +40,7 @@ const LoginForm = ({ setUser, messageUpdater }) => {
 			<label>
 				Password:
 				<input
+					id="password"
 					type="password"
 					value={password}
 					name="password"
@@ -48,7 +50,9 @@ const LoginForm = ({ setUser, messageUpdater }) => {
 				></input>
 			</label>
 			<br />
-			<button type="submit">login</button>
+			<button id="login-button" type="submit">
+				login
+			</button>
 		</form>
 	)
 }

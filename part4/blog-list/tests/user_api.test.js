@@ -1,58 +1,58 @@
 // TODO Test for login with invalid credentials
 
-const supertest = require('supertest');
-const { app, mongooseTestInterface } = require('../app');
-const User = require('../models/user');
-const api = supertest(app);
-const helpers = require('./api_test_helpers');
+const supertest = require('supertest')
+const { app, mongooseTestInterface } = require('../app')
+const User = require('../models/user')
+const api = supertest(app)
+const helpers = require('./api_test_helpers')
 
 beforeAll(async () => {
-	await mongooseTestInterface.connect();
-});
+	await mongooseTestInterface.connect()
+})
 
 afterAll(async () => {
-	await mongooseTestInterface.disconnect();
-});
+	await mongooseTestInterface.disconnect()
+})
 
 beforeEach(async () => {
-	await User.deleteMany({});
-	await api.post('/api/users/').send(helpers.initialUsers[0]);
-	await api.post('/api/users/').send(helpers.initialUsers[1]);
-});
+	await User.deleteMany({})
+	await api.post('/api/users/').send(helpers.initialUsers[0])
+	await api.post('/api/users/').send(helpers.initialUsers[1])
+})
 
 describe('Users API tests', () => {
 	test('users are returned as JSON', async () => {
 		await api
 			.get('/api/users/')
 			.expect(200)
-			.expect('Content-type', /application\/json/);
-	});
+			.expect('Content-type', /application\/json/)
+	})
 
 	test('users are valid', async () => {
-		const allUsers = await helpers.getUsersFromDB();
+		const allUsers = await helpers.getUsersFromDB()
 
-		allUsers.forEach((user) => {
-			expect(user).toHaveProperty('login');
-			expect(user).toHaveProperty('displayName');
-			expect(user).toHaveProperty('blogs');
-			expect(user).toHaveProperty('id');
-		});
-		expect(allUsers).toHaveLength(helpers.initialUsers.length);
-	});
+		allUsers.forEach(user => {
+			expect(user).toHaveProperty('login')
+			expect(user).toHaveProperty('displayName')
+			expect(user).toHaveProperty('blogs')
+			expect(user).toHaveProperty('id')
+		})
+		expect(allUsers).toHaveLength(helpers.initialUsers.length)
+	})
 
 	test('valid users are created', async () => {
 		const validUser = {
 			login: 'ThisIsFine',
 			displayName: 'Valid User',
 			password: '1234567890',
-		};
+		}
 
-		await api.post('/api/users/').send(validUser).expect(200);
+		await api.post('/api/users/').send(validUser).expect(200)
 
-		const allUsersAfterTest = await helpers.getUsersFromDB();
+		const allUsersAfterTest = await helpers.getUsersFromDB()
 
-		expect(allUsersAfterTest).toHaveLength(helpers.initialUsers.length + 1);
-	});
+		expect(allUsersAfterTest).toHaveLength(helpers.initialUsers.length + 1)
+	})
 
 	test('users with invalid credentials are not created', async () => {
 		const invalidUsers = {
@@ -76,20 +76,23 @@ describe('Users API tests', () => {
 				displayName: 'display tester 6',
 				password: '111',
 			},
-		};
+		}
 
-		await api.post('/api/users/').send(invalidUsers.shortPass).expect(422);
+		await api.post('/api/users/').send(invalidUsers.shortPass).expect(422)
 
-		await api.post('/api/users/').send(invalidUsers.shortLogin).expect(422);
+		await api.post('/api/users/').send(invalidUsers.shortLogin).expect(422)
 
-		await api.post('/api/users/').send(invalidUsers.invalidPass).expect(422);
+		await api.post('/api/users/').send(invalidUsers.invalidPass).expect(422)
 
-		await api.post('/api/users/').send(invalidUsers.invalidLogin).expect(400);
+		await api
+			.post('/api/users/')
+			.send(invalidUsers.invalidLogin)
+			.expect(400)
 
-		const allUsersAfterTest = await helpers.getUsersFromDB();
+		const allUsersAfterTest = await helpers.getUsersFromDB()
 
-		expect(allUsersAfterTest).toHaveLength(helpers.initialUsers.length);
-	});
+		expect(allUsersAfterTest).toHaveLength(helpers.initialUsers.length)
+	})
 
 	test('login of users should be unique', async () => {
 		const duplicatedUsers = [
@@ -103,36 +106,36 @@ describe('Users API tests', () => {
 				displayName: 'duplicated',
 				password: '111',
 			},
-		];
+		]
 
-		await api.post('/api/users/').send(duplicatedUsers[0]).expect(200);
-		await api.post('/api/users/').send(duplicatedUsers[1]).expect(400);
+		await api.post('/api/users/').send(duplicatedUsers[0]).expect(200)
+		await api.post('/api/users/').send(duplicatedUsers[1]).expect(400)
 
-		const allUsersAfterTest = await helpers.getUsersFromDB();
+		const allUsersAfterTest = await helpers.getUsersFromDB()
 
-		expect(allUsersAfterTest).toHaveLength(helpers.initialUsers.length + 1);
-	});
-});
+		expect(allUsersAfterTest).toHaveLength(helpers.initialUsers.length + 1)
+	})
+})
 
 describe('login API tests', () => {
 	test('login operation with valid credentials is successful', async () => {
-		const response = await api.post('/api/login/').send(helpers.loginInfo);
+		const response = await api.post('/api/login/').send(helpers.loginInfo)
 
-		expect(response.body).toHaveProperty('token');
-		expect(response.body).toHaveProperty('login');
-		expect(response.body).toHaveProperty('displayName');
-	});
+		expect(response.body).toHaveProperty('token')
+		expect(response.body).toHaveProperty('login')
+		expect(response.body).toHaveProperty('displayName')
+	})
 
 	test('login operation with invalid credentials is not successful', async () => {
 		const wrongLogin = {
 			login: 'NONEXISTING',
 			password: '111',
-		};
+		}
 		const wrongPassword = {
 			login: 'TESTER1',
 			password: 'NONEXISTING',
-		};
-		await api.post('/api/login/').send(wrongLogin).expect(401);
-		await api.post('/api/login/').send(wrongPassword).expect(401);
-	});
-});
+		}
+		await api.post('/api/login/').send(wrongLogin).expect(401)
+		await api.post('/api/login/').send(wrongPassword).expect(401)
+	})
+})

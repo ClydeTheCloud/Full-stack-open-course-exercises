@@ -10,7 +10,7 @@ const AddBlogForm = ({ handleAddBlog }) => {
 		event.preventDefault()
 		handleAddBlog(title, author, url)
 		setTitle('')
-		setTitle('')
+		setAuthor('')
 		setUrl('')
 	}
 

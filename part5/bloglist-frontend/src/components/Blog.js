@@ -34,6 +34,7 @@ const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
 		if (blog.creator.login === user.login) {
 			return (
 				<button
+					className={'delete-button'}
 					style={{ color: 'white', backgroundColor: 'red' }}
 					onClick={() => {
 						deleteBlog(blog)
@@ -51,6 +52,7 @@ const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
 			<br />
 			Likes: {blog.likes}{' '}
 			<button
+				className={'like-button'}
 				onClick={() => {
 					likeBlog(blog)
 				}}

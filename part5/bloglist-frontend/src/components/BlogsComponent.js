@@ -66,7 +66,9 @@ const BlogsComponent = ({ user, setUser, messageUpdater, blogs, setBlogs }) => {
 		<>
 			<h3>Logged in as {user.displayName}</h3>
 			{/* <br /> */}
-			<button onClick={handleLogOut}>Log Out</button>
+			<button id={'logout-button'} onClick={handleLogOut}>
+				Log Out
+			</button>
 			<hr />
 			<Togglable
 				openLabel="Add new blog"

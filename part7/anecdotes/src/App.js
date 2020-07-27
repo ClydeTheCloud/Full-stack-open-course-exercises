@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import {
 	Switch,
 	Route,
 	Link,
 	useRouteMatch,
 	useHistory,
-} from 'react-router-dom';
+} from 'react-router-dom'
+import { useField } from './hooks'
 
 const Menu = () => {
 	const padding = {
 		paddingRight: 5,
-	};
+	}
 	return (
 		<div>
 			<Link style={padding} to="/">
@@ -23,8 +24,8 @@ const Menu = () => {
 				about
 			</Link>
 		</div>
-	);
-};
+	)
+}
 
 const AnecdoteList = ({ anecdotes }) => (
 	<div>
@@ -39,7 +40,7 @@ const AnecdoteList = ({ anecdotes }) => (
 			))}
 		</ul>
 	</div>
-);
+)
 
 const About = () => (
 	<div>
@@ -62,7 +63,7 @@ const About = () => (
 			can find the best and add more.
 		</p>
 	</div>
-);
+)
 
 const Footer = () => (
 	<div>
@@ -76,31 +77,28 @@ const Footer = () => (
 		</a>{' '}
 		for the source code.
 	</div>
-);
+)
 
 const CreateNew = props => {
-	const [content, setContent] = useState('');
-	const [author, setAuthor] = useState('');
-	const [info, setInfo] = useState('');
-	const history = useHistory();
+	const content = useField('text')
+	const author = useField('text')
+	const info = useField('text')
+	const history = useHistory()
 
 	const handleSubmit = e => {
-		e.preventDefault();
+		e.preventDefault()
 		props.addNew({
-			content,
-			author,
-			info,
+			content: content.value,
+			author: author.value,
+			info: info.value,
 			votes: 0,
-		});
-		props.setNotification(`a new anecdote ${content} created!`);
+		})
+		props.setNotification(`a new anecdote ${content.value} created!`)
 		setTimeout(() => {
-			props.setNotification('');
-		}, 10000);
-		setContent('');
-		setAuthor('');
-		setInfo('');
-		history.push('/');
-	};
+			props.setNotification('')
+		}, 10000)
+		history.push('/')
+	}
 
 	return (
 		<div>
@@ -108,37 +106,35 @@ const CreateNew = props => {
 			<form onSubmit={handleSubmit}>
 				<div>
 					content
-					<input
-						name="content"
-						value={content}
-						onChange={e => setContent(e.target.value)}
-					/>
+					<input {...content} />
 				</div>
 				<div>
 					author
-					<input
-						name="author"
-						value={author}
-						onChange={e => setAuthor(e.target.value)}
-					/>
+					<input {...author} />
 				</div>
 				<div>
 					url for more info
-					<input
-						name="info"
-						value={info}
-						onChange={e => setInfo(e.target.value)}
-					/>
+					<input {...info} />
 				</div>
-				<button>create</button>
+				<button type="submit">create</button>
+				<button
+					type="reset"
+					onClick={() => {
+						content.onChange('reset')
+						author.onChange('reset')
+						info.onChange('reset')
+					}}
+				>
+					reset
+				</button>
 			</form>
 		</div>
-	);
-};
+	)
+}
 
 const Anecdote = ({ anecdote }) => {
-	return <div>{anecdote.content}</div>;
-};
+	return <div>{anecdote.content}</div>
+}
 
 const App = () => {
 	const [anecdotes, setAnecdotes] = useState([
@@ -157,31 +153,31 @@ const App = () => {
 			votes: 0,
 			id: '2',
 		},
-	]);
-	const match = useRouteMatch('/anecdotes/:id');
+	])
+	const match = useRouteMatch('/anecdotes/:id')
 	const matchedAnecdote = match
 		? anecdotes.find(a => parseInt(a.id) === parseInt(match.params.id))
-		: null;
+		: null
 
-	const [notification, setNotification] = useState('');
+	const [notification, setNotification] = useState('')
 
 	const addNew = anecdote => {
-		anecdote.id = (Math.random() * 10000).toFixed(0);
-		setAnecdotes(anecdotes.concat(anecdote));
-	};
+		anecdote.id = (Math.random() * 10000).toFixed(0)
+		setAnecdotes(anecdotes.concat(anecdote))
+	}
 
-	const anecdoteById = id => anecdotes.find(a => a.id === id);
+	const anecdoteById = id => anecdotes.find(a => a.id === id)
 
 	const vote = id => {
-		const anecdote = anecdoteById(id);
+		const anecdote = anecdoteById(id)
 
 		const voted = {
 			...anecdote,
 			votes: anecdote.votes + 1,
-		};
+		}
 
-		setAnecdotes(anecdotes.map(a => (a.id === id ? voted : a)));
-	};
+		setAnecdotes(anecdotes.map(a => (a.id === id ? voted : a)))
+	}
 
 	return (
 		<div>
@@ -207,7 +203,7 @@ const App = () => {
 			</Switch>
 			<Footer />
 		</div>
-	);
-};
+	)
+}
 
-export default App;
+export default App

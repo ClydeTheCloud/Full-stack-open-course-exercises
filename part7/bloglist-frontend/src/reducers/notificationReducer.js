@@ -1,9 +1,6 @@
-import { useDispatch } from 'react-redux'
-
 const initState = { message: 'Welcome', status: 'success' }
 
 let timerId
-// const dispatch = useDispatch()
 
 export const messangeHandler = (action, time = 3) => {
 	return async dispatch => {

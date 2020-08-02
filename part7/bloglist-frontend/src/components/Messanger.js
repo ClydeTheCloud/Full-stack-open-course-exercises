@@ -4,7 +4,6 @@ import './Messanger.css'
 
 const Messanger = () => {
 	const notification = useSelector(state => state.notification)
-	console.log(notification)
 
 	if (notification.status === 'inactive') {
 		return null

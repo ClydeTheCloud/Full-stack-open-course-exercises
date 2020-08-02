@@ -1,26 +1,26 @@
 import React, { useRef } from 'react'
-import PropTypes from 'prop-types'
 import AddBlogForm from './AddBlogForm'
 import Togglable from './Togglable'
-import blogService from '../services/blogs'
 import Blog from './Blog'
 
-const BlogsComponent = ({ user, setUser, messageUpdater, blogs, setBlogs }) => {
+import { useDispatch, useSelector } from 'react-redux'
+
+import { userLogout } from '../reducers/userReducer'
+
+const BlogsComponent = () => {
 	const noteFormRef = useRef()
 
+	const dispatch = useDispatch()
+
+	const blogs = useSelector(state => state.blogs)
+	const user = useSelector(state => state.user)
+
 	const handleLogOut = () => {
-		setUser(null)
-		window.localStorage.removeItem('blogUser')
+		dispatch(userLogout())
 	}
 
 	const toggle = () => {
 		noteFormRef.current.toggleVisibility()
-	}
-
-	const likeBlog = async blog => {
-		const updatedBlog = await blogService.update(blog)
-		const newBlogs = blogs.filter(b => b.id !== blog.id)
-		setBlogs(newBlogs.concat(updatedBlog))
 	}
 
 	const sortBlogs = () => {
@@ -32,36 +32,6 @@ const BlogsComponent = ({ user, setUser, messageUpdater, blogs, setBlogs }) => {
 		return sortedBlogs
 	}
 
-	const deleteBlog = async blog => {
-		if (
-			window.confirm(
-				`Are you sure you want to delete ${blog.title} by ${blog.author}?`
-			)
-		) {
-			await blogService.remove(blog)
-			setBlogs(blogs.filter(b => b.id !== blog.id))
-		}
-	}
-
-	const handleAddBlog = async (title, author, url) => {
-		try {
-			const createdBlog = await blogService.create({
-				title,
-				author,
-				url,
-			})
-			messageUpdater(
-				`Created blog entry "${createdBlog.title}" by ${createdBlog.author}`,
-				'success'
-			)
-			toggle()
-			setBlogs(blogs.concat(createdBlog))
-		} catch (exception) {
-			console.log(exception)
-			messageUpdater('Creating new blog failed, try again.', 'error')
-		}
-	}
-
 	return (
 		<>
 			<h3>Logged in as {user.displayName}</h3>
@@ -71,32 +41,17 @@ const BlogsComponent = ({ user, setUser, messageUpdater, blogs, setBlogs }) => {
 			</button>
 			<hr />
 			<Togglable
-				openLabel="Add new blog"
-				closeLabel="cancel"
-				ref={noteFormRef}
-			>
-				<AddBlogForm handleAddBlog={handleAddBlog} />
+				openLabel='Add new blog'
+				closeLabel='cancel'
+				ref={noteFormRef}>
+				<AddBlogForm toggle={toggle} />
 			</Togglable>
 			<hr />
 			{sortBlogs().map(blog => (
-				<Blog
-					key={blog.id}
-					blog={blog}
-					likeBlog={likeBlog}
-					user={user}
-					deleteBlog={deleteBlog}
-				/>
+				<Blog key={blog.id} blog={blog} />
 			))}
 		</>
 	)
-}
-
-BlogsComponent.propTypes = {
-	user: PropTypes.PropTypes.object.isRequired,
-	setUser: PropTypes.func.isRequired,
-	messageUpdater: PropTypes.func.isRequired,
-	blogs: PropTypes.array.isRequired,
-	setBlogs: PropTypes.func.isRequired,
 }
 
 export default BlogsComponent

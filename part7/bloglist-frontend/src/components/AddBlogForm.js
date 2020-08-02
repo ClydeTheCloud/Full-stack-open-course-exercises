@@ -1,14 +1,44 @@
 import React, { useState } from 'react'
-import PropTypes from 'prop-types'
+import { useDispatch } from 'react-redux'
 
-const AddBlogForm = ({ handleAddBlog }) => {
+import { blogCreate } from '../reducers/blogReducer'
+import {
+	messangerCreate,
+	messangeHandler,
+} from '../reducers/notificationReducer'
+
+const AddBlogForm = ({ toggle }) => {
 	const [title, setTitle] = useState('')
 	const [author, setAuthor] = useState('')
 	const [url, setUrl] = useState('')
 
+	const dispatch = useDispatch()
+
 	const submitHandler = event => {
 		event.preventDefault()
-		handleAddBlog(title, author, url)
+		try {
+			dispatch(blogCreate({ title, author, url }))
+			dispatch(
+				messangeHandler(
+					messangerCreate(
+						`Created blog entry "${title}" by ${author}`,
+						'success'
+					),
+					3
+				)
+			)
+			toggle()
+		} catch (exception) {
+			dispatch(
+				messangeHandler(
+					messangerCreate(
+						'Creating new blog failed, try again.',
+						'error'
+					),
+					5
+				)
+			)
+		}
 		setTitle('')
 		setAuthor('')
 		setUrl('')
@@ -20,52 +50,44 @@ const AddBlogForm = ({ handleAddBlog }) => {
 			<label>
 				Title:
 				<input
-					id="title-input"
-					type="text"
+					id='title-input'
+					type='text'
 					value={title}
-					name="title"
+					name='title'
 					onChange={event => {
 						setTitle(event.target.value)
-					}}
-				></input>
+					}}></input>
 			</label>
 			<br />
 			<label>
 				Author:
 				<input
-					id="author-input"
-					type="text"
+					id='author-input'
+					type='text'
 					value={author}
-					name="author"
+					name='author'
 					onChange={event => {
 						setAuthor(event.target.value)
-					}}
-				></input>
+					}}></input>
 			</label>
 			<br />
 			<label>
 				URL:
 				<input
-					id="url-input"
-					type="text"
+					id='url-input'
+					type='text'
 					value={url}
-					name="url"
+					name='url'
 					onChange={event => {
 						setUrl(event.target.value)
-					}}
-				></input>
+					}}></input>
 			</label>
 			<br />
-			<button id="create-button" type="submit">
+			<button id='create-button' type='submit'>
 				create
 			</button>
 		</form>
 	)
-}
-
-//messageUpdater, blogs, setBlogs, toggleVisibility
-AddBlogForm.propTypes = {
-	handleAddBlog: PropTypes.func.isRequired,
 }
 
 export default AddBlogForm

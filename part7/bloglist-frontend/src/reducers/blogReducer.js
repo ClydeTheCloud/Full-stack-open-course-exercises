@@ -1,8 +1,8 @@
-import blogServices from '../services/blogs'
+import blogService from '../services/blogs'
 
-export const init = () => {
+export const blogInit = () => {
 	return async dispatch => {
-		const blogs = await blogServices.getAll()
+		const blogs = await blogService.getAll()
 		dispatch({
 			type: 'INIT_BLOGS',
 			data: blogs,
@@ -10,9 +10,9 @@ export const init = () => {
 	}
 }
 
-export const create = content => {
+export const blogCreate = content => {
 	return async dispatch => {
-		const createdBlog = await blogServices.create(content)
+		const createdBlog = await blogService.create(content)
 		dispatch({
 			type: 'NEW_BLOG',
 			data: createdBlog,
@@ -20,9 +20,9 @@ export const create = content => {
 	}
 }
 
-export const like = content => {
+export const blogLike = content => {
 	return async dispatch => {
-		const likedBlog = await blogServices.update(content)
+		const likedBlog = await blogService.update(content)
 		dispatch({
 			type: 'LIKE_BLOG',
 			data: likedBlog,
@@ -30,9 +30,9 @@ export const like = content => {
 	}
 }
 
-export const remove = content => {
+export const blogRemove = content => {
 	return async dispatch => {
-		const deletedBlogId = await blogServices.remove(content)
+		const deletedBlogId = await blogService.remove(content)
 		dispatch({
 			type: 'DELETE_BLOG',
 			data: deletedBlogId,
@@ -48,14 +48,14 @@ const blogReducer = (state = [], action) => {
 			return [...state, action.data]
 		case 'LIKE_BLOG':
 			const likedBlog = state.find(b => b.id === action.data.id)
-			const newState = [
+			const stateAfterLike = [
 				...state.filter(b => b.id !== action.data.id),
 				likedBlog,
 			]
-			return newState
+			return stateAfterLike
 		case 'DELETE_BLOG':
-			const newState = state.filter(b => b.id !== action.data)
-			return newState
+			const stateAfterDelete = state.filter(b => b.id !== action.data)
+			return stateAfterDelete
 		default:
 			return state
 	}

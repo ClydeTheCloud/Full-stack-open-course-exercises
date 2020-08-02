@@ -1,12 +1,17 @@
 import React, { useState } from 'react'
-import PropTypes from 'prop-types'
 
-const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
+import { blogLike, blogRemove } from '../reducers/blogReducer'
+import { useSelector, useDispatch } from 'react-redux'
+
+const Blog = ({ blog }) => {
 	const [blogVisibility, setBlogVisibility] = useState(false)
 
 	const blogVisibilityHandler = () => {
 		setBlogVisibility(!blogVisibility)
 	}
+
+	const user = useSelector(state => state.user)
+	const dispatch = useDispatch()
 
 	const style = {
 		flex: {
@@ -24,8 +29,22 @@ const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
 		},
 	}
 
+	const likeBlog = blog => {
+		dispatch(blogLike(blog))
+	}
+
+	const deleteBlog = blog => {
+		if (
+			window.confirm(
+				`Are you sure you want to delete ${blog.title} by ${blog.author}?`
+			)
+		) {
+			dispatch(blogRemove(blog))
+		}
+	}
+
 	const buttonRender = () => (
-		<button onClick={blogVisibilityHandler} className="show-and-hide">
+		<button onClick={blogVisibilityHandler} className='show-and-hide'>
 			{blogVisibility ? 'Hide' : 'Show'} blog info.
 		</button>
 	)
@@ -38,8 +57,7 @@ const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
 					style={{ color: 'white', backgroundColor: 'red' }}
 					onClick={() => {
 						deleteBlog(blog)
-					}}
-				>
+					}}>
 					delete
 				</button>
 			)
@@ -55,8 +73,7 @@ const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
 				className={'like-button'}
 				onClick={() => {
 					likeBlog(blog)
-				}}
-			>
+				}}>
 				Like
 			</button>
 			<br />
@@ -67,20 +84,13 @@ const Blog = ({ blog, likeBlog, user, deleteBlog }) => {
 	)
 
 	return (
-		<div style={style.appearance} className="blog">
+		<div style={style.appearance} className='blog'>
 			<div style={style.flex}>
 				{blog.title} by: {blog.author}. {buttonRender()}
 			</div>
 			{blogVisibility ? showInfo() : null}
 		</div>
 	)
-}
-
-Blog.propTypes = {
-	blog: PropTypes.object.isRequired,
-	likeBlog: PropTypes.func.isRequired,
-	user: PropTypes.object.isRequired,
-	deleteBlog: PropTypes.func.isRequired,
 }
 
 export default Blog

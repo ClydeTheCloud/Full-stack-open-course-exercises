@@ -1,50 +1,30 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+
 import Messanger from './components/Messanger'
-import blogService from './services/blogs'
 import BlogsComponent from './components/BlogsComponent'
 import LoginForm from './components/LoginForm'
 
+import { blogInit } from './reducers/blogReducer'
+import { messangerInit, messangeHandler } from './reducers/notificationReducer'
+import { userInit } from './reducers/userReducer'
+
 const App = () => {
-	const [blogs, setBlogs] = useState([])
-	const [user, setUser] = useState(null)
-	const [message, setMessage] = useState({ message: '', state: 'inactive' })
+	const user = useSelector(state => state.user)
 
-	function messageUpdater(message, state) {
-		setMessage({ message, state })
-		setTimeout(() => {
-			setMessage({ message: '', state: 'inactive' })
-		}, 5000)
-	}
+	const dispatch = useDispatch()
 
 	useEffect(() => {
-		blogService.getAll().then(blogs => setBlogs(blogs))
-	}, [])
-
-	useEffect(() => {
-		if (window.localStorage.getItem('blogUser')) {
-			const parsedUser = JSON.parse(
-				window.localStorage.getItem('blogUser')
-			)
-			setUser(parsedUser)
-			blogService.setToken(parsedUser)
-		}
-	}, [])
+		dispatch(userInit())
+		dispatch(blogInit())
+		dispatch(messangeHandler(messangerInit(), 10))
+	}, [dispatch])
 
 	return (
 		<div>
 			<h2>Blogs</h2>
-			<Messanger message={message.message} state={message.state} />
-			{user === null ? (
-				<LoginForm setUser={setUser} messageUpdater={messageUpdater} />
-			) : (
-				<BlogsComponent
-					user={user}
-					setUser={setUser}
-					messageUpdater={messageUpdater}
-					blogs={blogs}
-					setBlogs={setBlogs}
-				/>
-			)}
+			<Messanger />
+			{user === null ? <LoginForm /> : <BlogsComponent />}
 		</div>
 	)
 }

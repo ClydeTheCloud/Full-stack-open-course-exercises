@@ -1,23 +1,31 @@
 import React, { useState } from 'react'
-import PropTypes from 'prop-types'
-import loginService from '../services/login'
-import blogService from '../services/blogs'
+import { useDispatch } from 'react-redux'
 
-const LoginForm = ({ setUser, messageUpdater }) => {
+import { userLogin } from '../reducers/userReducer'
+import {
+	messangerCreate,
+	messangeHandler,
+} from '../reducers/notificationReducer'
+
+const LoginForm = () => {
 	const [login, setLogin] = useState('')
 	const [password, setPassword] = useState('')
+
+	const dispatch = useDispatch()
 
 	const handleLogin = async event => {
 		event.preventDefault()
 		try {
-			const newUser = await loginService.login({ login, password })
+			await dispatch(userLogin(login, password))
 			setLogin('')
 			setPassword('')
-			setUser(newUser)
-			blogService.setToken(newUser)
-			window.localStorage.setItem('blogUser', JSON.stringify(newUser))
 		} catch (exception) {
-			messageUpdater('Wrong login or password', 'error')
+			dispatch(
+				messangeHandler(
+					messangerCreate('Wrong login or password', 'error')
+				),
+				5
+			)
 		}
 	}
 
@@ -27,39 +35,32 @@ const LoginForm = ({ setUser, messageUpdater }) => {
 			<label>
 				Login:
 				<input
-					id="login"
-					type="text"
+					id='login'
+					type='text'
 					value={login}
-					name="Login"
+					name='Login'
 					onChange={event => {
 						setLogin(event.target.value)
-					}}
-				></input>
+					}}></input>
 			</label>
 			<br />
 			<label>
 				Password:
 				<input
-					id="password"
-					type="password"
+					id='password'
+					type='password'
 					value={password}
-					name="password"
+					name='password'
 					onChange={event => {
 						setPassword(event.target.value)
-					}}
-				></input>
+					}}></input>
 			</label>
 			<br />
-			<button id="login-button" type="submit">
+			<button id='login-button' type='submit'>
 				login
 			</button>
 		</form>
 	)
-}
-
-LoginForm.propTypes = {
-	setUser: PropTypes.func.isRequired,
-	messageUpdater: PropTypes.func.isRequired,
 }
 
 export default LoginForm

@@ -1,18 +1,20 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import { useSelector } from 'react-redux'
 import './Messanger.css'
 
-const Messanger = ({ message, state }) => {
-	if (state === 'inactive') {
+const Messanger = () => {
+	const notification = useSelector(state => state.notification)
+	console.log(notification)
+
+	if (notification.status === 'inactive') {
 		return null
 	}
 
-	return <div className={'message ' + state}>{message}</div>
-}
-
-Messanger.propTypes = {
-	message: PropTypes.string.isRequired,
-	state: PropTypes.string.isRequired,
+	return (
+		<div className={'message ' + notification.status}>
+			{notification.message}
+		</div>
+	)
 }
 
 export default Messanger

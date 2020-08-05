@@ -1,0 +1,13 @@
+POST http://localhost:3003/api/blogs
+content-type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbiI6InRlc3RMb2dpbiIsImlkIjoiNWVmZjMyNmFkYmZlYTgyYzRjNTRmN2I5IiwiaWF0IjoxNTkzODcxMjE1fQ.lHpS9z0hYzQXEfQLZDb4dLBMtVbpewKm11-L0ZzPbQg
+
+
+{
+	"title": "Test with roken",
+	"author": "Tester author",
+	"url": "hello",
+	"likes": 101
+}
+
+

@@ -1,0 +1,58 @@
+{
+	"name": "bloglist-frontend",
+	"version": "0.1.0",
+	"private": true,
+	"dependencies": {
+		"@testing-library/user-event": "^7.2.1",
+		"autoprefixer": "^9.8.6",
+		"axios": "^0.19.2",
+		"eslint": "^6.8.0",
+		"eslint-plugin-flowtype": "^3.13.0",
+		"eslint-plugin-import": "^2.22.0",
+		"react": "^16.12.0",
+		"react-dom": "^16.12.0",
+		"react-redux": "^7.2.1",
+		"react-router-dom": "^5.2.0",
+		"react-scripts": "3.3.1",
+		"redux": "^4.0.5",
+		"redux-thunk": "^2.3.0"
+	},
+	"scripts": {
+		"build:tailwind": "tailwindcss build src/tailwind.css -o src/tailwind.output.css",
+		"start": "react-scripts start",
+		"build": "react-scripts build",
+		"test": "react-scripts test",
+		"eject": "react-scripts eject",
+		"server": "cd ../backend/ && npm run dev",
+		"es-Lint": "eslint .",
+		"cypress:server": "cd ../backend/ && npm run start:test",
+		"cypress:open": "cypress open",
+		"prestart": "npm run build:tailwind",
+		"prebuild": "npm run build:tailwind"
+	},
+	"eslintConfig": {
+		"extends": "react-app"
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	},
+	"proxy": "http://localhost:3001",
+	"devDependencies": {
+		"@testing-library/jest-dom": "^4.2.4",
+		"@testing-library/react": "^9.5.0",
+		"cypress": "^4.11.0",
+		"eslint-plugin-cypress": "^2.11.1",
+		"eslint-plugin-jest": "^23.18.0",
+		"redux-devtools-extension": "^2.13.8",
+		"tailwindcss": "^1.6.1"
+	}
+}

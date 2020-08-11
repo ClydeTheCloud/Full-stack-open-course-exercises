@@ -17,7 +17,7 @@
 		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
-		"start:server": "cd ../librarium && node index.js"
+		"start:server": "cd ../librarium-backend && node index.js"
 	},
 	"eslintConfig": {
 		"extends": "react-app"

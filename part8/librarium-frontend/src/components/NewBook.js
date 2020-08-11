@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useLazyQuery, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { ADD_NEW_BOOK, AUTHORS_QUERY, BOOKS_QUERY } from '../queries'
 
 const NewBook = props => {
@@ -8,6 +8,7 @@ const NewBook = props => {
 	const [published, setPublished] = useState('')
 	const [genre, setGenre] = useState('')
 	const [genres, setGenres] = useState([])
+
 	const [addBook] = useMutation(ADD_NEW_BOOK, {
 		refetchQueries: [{ query: AUTHORS_QUERY }, { query: BOOKS_QUERY }],
 	})
@@ -62,7 +63,7 @@ const NewBook = props => {
 				<div>
 					published
 					<input
-						type='number'
+						type="number"
 						value={published}
 						onChange={({ target }) => setPublished(target.value)}
 					/>
@@ -72,12 +73,12 @@ const NewBook = props => {
 						value={genre}
 						onChange={({ target }) => setGenre(target.value)}
 					/>
-					<button onClick={addGenre} type='button'>
+					<button onClick={addGenre} type="button">
 						add genre
 					</button>
 				</div>
 				<div>genres: {genres.join(' ')}</div>
-				<button type='submit'>create book</button>
+				<button type="submit">create book</button>
 			</form>
 		</div>
 	)

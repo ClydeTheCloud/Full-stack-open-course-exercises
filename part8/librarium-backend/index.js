@@ -141,7 +141,7 @@ const resolvers = {
 			await Book.deleteMany({})
 			await Author.deleteMany({})
 		},
-		editAuthor: async (root, args) => {
+		editAuthor: async (root, args, context) => {
 			if (!context.currentUser) {
 				throw new UserInputError('Please, log in.')
 			}

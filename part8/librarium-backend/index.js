@@ -1,10 +1,12 @@
 require('dotenv').config()
-const { ApolloServer, UserInputError, gql } = require('apollo-server')
+const { ApolloServer, UserInputError, gql, PubSub } = require('apollo-server')
 const mongoose = require('mongoose')
 const JWT = require('jsonwebtoken')
 const Book = require('./models/book')
 const Author = require('./models/author')
 const User = require('./models/user')
+
+const pubsub = new PubSub()
 
 mongoose.set('useFindAndModify', false)
 
@@ -30,6 +32,10 @@ const typeDefs = gql`
 		allBooks(author: String, genre: String): [Book!]!
 		allAuthors: [Author!]!
 		me: User
+	}
+
+	type Subscription {
+		bookAdded: Book!
 	}
 
 	type Book {
@@ -93,13 +99,18 @@ const resolvers = {
 				}).populate('author')
 			}
 		},
-		allAuthors: () => Author.find({}),
+		allAuthors: () => {
+			console.log('ALL AUTHORS QUERY')
+			return Author.find({})
+		},
 		me: (root, args, context) => {
 			return context.currentUser
 		},
 	},
 	Author: {
-		bookCount: async root => {
+		bookCount: async (root, args, context, info) => {
+			console.log('AUTHOR BOOK COUNT QUERRY')
+			console.log(info)
 			const authorToFind = await Author.findOne({ name: root.name })
 			return Book.collection.countDocuments({
 				author: authorToFind._id,
@@ -135,6 +146,8 @@ const resolvers = {
 			}
 
 			await newBook.populate('author').execPopulate()
+
+			pubsub.publish('BOOK_ADDED', { bookAdded: newBook })
 			return newBook
 		},
 		clear: async (root, args) => {
@@ -183,6 +196,11 @@ const resolvers = {
 			return { value: JWT.sign(userForToken, process.env.JWT_SECRET) }
 		},
 	},
+	Subscription: {
+		bookAdded: {
+			subscribe: () => pubsub.asyncIterator(['BOOK_ADDED']),
+		},
+	},
 }
 
 const server = new ApolloServer({
@@ -201,6 +219,7 @@ const server = new ApolloServer({
 	},
 })
 
-server.listen().then(({ url }) => {
+server.listen().then(({ url, subscriptionsUrl }) => {
 	console.log(`Server ready at ${url}`)
+	console.log(`Subscriptions ready at ${subscriptionsUrl}`)
 })

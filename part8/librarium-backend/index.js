@@ -5,6 +5,8 @@ const JWT = require('jsonwebtoken')
 const Book = require('./models/book')
 const Author = require('./models/author')
 const User = require('./models/user')
+const DataLoader = require('dataloader')
+const book = require('./models/book')
 
 const pubsub = new PubSub()
 
@@ -75,6 +77,31 @@ const typeDefs = gql`
 	}
 `
 
+const batchAuthors = async keys => {
+	const authors = await Author.find({
+		name: {
+			$in: keys,
+		},
+	})
+	console.log('BATCH AUTHORS QUERY')
+	return keys.map(key => authors.find(author => author.name === key))
+}
+
+const batchBooks = async keys => {
+	const books = await Book.find({
+		author: {
+			$in: keys,
+		},
+	})
+	console.log('BATCH BOOKS QUERY')
+	return keys.map(key => {
+		const filteredArray = books.filter(
+			b => b.author.toString() === key.toString()
+		)
+		return filteredArray.length
+	})
+}
+
 const resolvers = {
 	Query: {
 		bookCount: () => Book.collection.countDocuments(),
@@ -109,12 +136,9 @@ const resolvers = {
 	},
 	Author: {
 		bookCount: async (root, args, context, info) => {
-			console.log('AUTHOR BOOK COUNT QUERRY')
-			console.log(info)
-			const authorToFind = await Author.findOne({ name: root.name })
-			return Book.collection.countDocuments({
-				author: authorToFind._id,
-			})
+			console.log('AUTHOR BOOK COUNT QUERY')
+			const authorToFind = await context.loaders.author.load(root.name)
+			return context.loaders.book.load(authorToFind._id)
 		},
 	},
 	Mutation: {
@@ -206,16 +230,22 @@ const resolvers = {
 const server = new ApolloServer({
 	typeDefs,
 	resolvers,
-	context: async ({ req }) => {
-		const auth = req ? req.headers.authorization : null
-		if (auth && auth.toLowerCase().startsWith('bearer ')) {
-			const decodedToken = JWT.verify(
-				auth.substring(7),
-				process.env.JWT_SECRET
-			)
-			const currentUser = await User.findById(decodedToken.id)
-			return { currentUser }
-		}
+	context: {
+		currentUser: async ({ req }) => {
+			const auth = req ? req.headers.authorization : null
+			if (auth && auth.toLowerCase().startsWith('bearer ')) {
+				const decodedToken = JWT.verify(
+					auth.substring(7),
+					process.env.JWT_SECRET
+				)
+				const currentUser = await User.findById(decodedToken.id)
+				return currentUser
+			}
+		},
+		loaders: {
+			author: new DataLoader(keys => batchAuthors(keys)),
+			book: new DataLoader(keys => batchBooks(keys)),
+		},
 	},
 })
 

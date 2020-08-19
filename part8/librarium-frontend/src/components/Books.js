@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useQuery } from '@apollo/client'
 import { GET_ALL_GENRES } from '../queries'
 
@@ -6,7 +6,6 @@ const Books = props => {
 	const genres = useQuery(GET_ALL_GENRES)
 	const genresSet = new Set()
 	const genreButtons = []
-	useEffect(() => {}, [genres])
 	if (!props.show) {
 		return null
 	}

@@ -11,17 +11,18 @@ import {
 	useLazyQuery,
 	useSubscription,
 } from '@apollo/client'
-import { BOOKS_QUERY, AUTHORS_QUERY, BOOK_ADDED } from './queries'
+import {
+	BOOKS_QUERY,
+	AUTHORS_QUERY,
+	BOOK_ADDED,
+	GET_ALL_GENRES,
+} from './queries'
 
 const App = () => {
 	const [page, setPage] = useState('authors')
 	const [token, setToken] = useState(null)
 	const [filter, setFilter] = useState(null)
-	const [getBooks, books] = useLazyQuery(
-		BOOKS_QUERY /* {
-		fetchPolicy: 'cache-and-network',
-	} */
-	)
+	const [getBooks, books] = useLazyQuery(BOOKS_QUERY)
 	const authors = useQuery(AUTHORS_QUERY)
 	const client = useApolloClient()
 
@@ -42,20 +43,35 @@ const App = () => {
 		})
 	}, [filter]) //eslint-disable-line
 
-	const updateCacheWith = addedBook => {
+	const updateBookCacheWith = addedBook => {
 		const includedIn = (set, object) => {
 			set.map(b => b.id).includes(object.id)
 		}
 
-		const dataInStore = client.readQuery({
+		const booksInStore = client.readQuery({
 			query: BOOKS_QUERY,
 			variables: { genre: null },
 		})
-		if (!includedIn(dataInStore.allBooks, addedBook)) {
+
+		const genresInStore = client.readQuery({
+			query: GET_ALL_GENRES,
+		})
+
+		const addedBook_GENRES = {
+			genres: addedBook.genres,
+		}
+
+		if (!includedIn(booksInStore.allBooks, addedBook)) {
 			client.writeQuery({
 				query: BOOKS_QUERY,
-				data: { allBooks: dataInStore.allBooks.concat(addedBook) },
+				data: { allBooks: booksInStore.allBooks.concat(addedBook) },
 				variables: { genre: null },
+			})
+			client.writeQuery({
+				query: GET_ALL_GENRES,
+				data: {
+					allBooks: genresInStore.allBooks.concat(addedBook_GENRES),
+				},
 			})
 		}
 	}
@@ -63,7 +79,7 @@ const App = () => {
 	useSubscription(BOOK_ADDED, {
 		onSubscriptionData: ({ subscriptionData }) => {
 			const addedBook = subscriptionData.data.bookAdded
-			updateCacheWith(addedBook)
+			updateBookCacheWith(addedBook)
 		},
 	})
 

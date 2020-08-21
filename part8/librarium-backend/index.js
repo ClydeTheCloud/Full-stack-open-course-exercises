@@ -6,7 +6,6 @@ const Book = require('./models/book')
 const Author = require('./models/author')
 const User = require('./models/user')
 const DataLoader = require('dataloader')
-const book = require('./models/book')
 
 const pubsub = new PubSub()
 
@@ -83,7 +82,6 @@ const batchAuthors = async keys => {
 			$in: keys,
 		},
 	})
-	console.log('BATCH AUTHORS QUERY')
 	return keys.map(key => authors.find(author => author.name === key))
 }
 
@@ -93,7 +91,6 @@ const batchBooks = async keys => {
 			$in: keys,
 		},
 	})
-	console.log('BATCH BOOKS QUERY')
 	return keys.map(key => {
 		const filteredArray = books.filter(
 			b => b.author.toString() === key.toString()
@@ -127,7 +124,6 @@ const resolvers = {
 			}
 		},
 		allAuthors: () => {
-			console.log('ALL AUTHORS QUERY')
 			return Author.find({})
 		},
 		me: (root, args, context) => {
@@ -136,7 +132,6 @@ const resolvers = {
 	},
 	Author: {
 		bookCount: async (root, args, context, info) => {
-			console.log('AUTHOR BOOK COUNT QUERY')
 			const authorToFind = await context.loaders.author.load(root.name)
 			return context.loaders.book.load(authorToFind._id)
 		},
@@ -230,22 +225,21 @@ const resolvers = {
 const server = new ApolloServer({
 	typeDefs,
 	resolvers,
-	context: {
-		currentUser: async ({ req }) => {
-			const auth = req ? req.headers.authorization : null
-			if (auth && auth.toLowerCase().startsWith('bearer ')) {
-				const decodedToken = JWT.verify(
-					auth.substring(7),
-					process.env.JWT_SECRET
-				)
-				const currentUser = await User.findById(decodedToken.id)
-				return currentUser
-			}
-		},
-		loaders: {
+	context: async ({ req }) => {
+		const auth = req ? req.headers.authorization : null
+		let currentUser
+		if (auth && auth.toLowerCase().startsWith('bearer ')) {
+			const decodedToken = JWT.verify(
+				auth.substring(7),
+				process.env.JWT_SECRET
+			)
+			currentUser = await User.findById(decodedToken.id)
+		}
+		const loaders = {
 			author: new DataLoader(keys => batchAuthors(keys)),
 			book: new DataLoader(keys => batchBooks(keys)),
-		},
+		}
+		return { currentUser, loaders }
 	},
 })
 

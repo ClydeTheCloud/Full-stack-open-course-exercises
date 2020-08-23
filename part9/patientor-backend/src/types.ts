@@ -14,3 +14,5 @@ export type Patient_UNSAFE = {
 };
 
 export type Patient_SAFE = Omit<Patient_UNSAFE, "ssn">;
+
+export type NewPatient = Omit<Patient_UNSAFE, "id">;

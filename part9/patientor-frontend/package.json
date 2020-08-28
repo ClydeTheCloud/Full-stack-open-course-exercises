@@ -30,7 +30,8 @@
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
 		"lint": "eslint './src/**/*.{ts,tsx}'",
-		"lint:fix": "eslint './src/**/*.{ts,tsx}' --fix"
+		"lint:fix": "eslint './src/**/*.{ts,tsx}' --fix",
+		"start:server": "cd ../patientor-backend/ && npm start"
 	},
 	"browserslist": {
 		"production": [

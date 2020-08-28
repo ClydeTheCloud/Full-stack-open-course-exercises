@@ -1,8 +1,8 @@
 import diagnoses from "../data/diagnoses";
-import { Diagnose } from "../types";
+import { Diagnosis } from "../types";
 
-function getDiagnoses(): Diagnose[] {
-    return diagnoses;
+function getDiagnoses(): Diagnosis[] {
+  return diagnoses;
 }
 
 export default { getDiagnoses };

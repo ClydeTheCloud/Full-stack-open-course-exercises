@@ -6,6 +6,7 @@ import {
   HealthCheckEntry,
   HospitalEntry,
   OccupationalHealthcareEntry,
+  EntryType,
 } from "../types";
 import { useStateValue } from "../state";
 
@@ -55,13 +56,13 @@ let CardColor: "red" | "blue" | "violet";
 
 const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
   switch (entry.type) {
-    case "Hospital":
+    case EntryType.Hospital:
       CardColor = "red";
       return <Hospital entry={entry} />;
-    case "HealthCheck":
+    case EntryType.HealthCheck:
       CardColor = "blue";
       return <HealthCheck entry={entry} />;
-    case "OccupationalHealthcare":
+    case EntryType.OccupationalHealthcare:
       CardColor = "violet";
       return <OccupationalHealthcare entry={entry} />;
     default:

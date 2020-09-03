@@ -95,11 +95,11 @@ export function toNewPatient(obj: any): NewPatient {
   return newPatient;
 }
 
-function parseDiagnosisCodes(codes: any): Array<Diagnosis["code"]> {
+function parseDiagnosisCodes(codes: any): Array<Diagnosis["code"]> | undefined {
   if (codes instanceof Array && codes.length > 0) {
     return codes.map((code) => parseCommonTextField(code));
   } else {
-    return [];
+    return undefined;
   }
 }
 
@@ -111,9 +111,6 @@ export function toNewEntry(obj: any): Entry {
     diagnosisCodes: parseDiagnosisCodes(obj.diagnosisCodes),
   };
 
-  console.log("POSSIBLE VALUES", Object.values(HealthCheckRating));
-  console.log("INPUT VALUE", parseInt(obj.healthCheckRating));
-
   switch (obj.type) {
     case "HealthCheck":
       const healthCheckEntry: HealthCheckEntry = {
@@ -122,6 +119,7 @@ export function toNewEntry(obj: any): Entry {
         type: "HealthCheck",
         healthCheckRating: parseHealthRating(obj.healthCheckRating),
       };
+
       return healthCheckEntry;
     case "Hospital":
       const hospitalEntry: HospitalEntry = {
@@ -129,10 +127,11 @@ export function toNewEntry(obj: any): Entry {
         id: generateId(),
         type: "Hospital",
         discharge: {
-          date: parseCommonTextField(obj.discharge.startDate),
-          criteria: parseCommonTextField(obj.discharge.endDate),
+          date: parseCommonTextField(obj.discharge.date),
+          criteria: parseCommonTextField(obj.discharge.criteria),
         },
       };
+
       return hospitalEntry;
     case "OccupationalHealthcare":
       const occupationalHealthcareEntry: OccupationalHealthcareEntry = {
@@ -147,6 +146,8 @@ export function toNewEntry(obj: any): Entry {
             }
           : undefined,
       };
+      console.log("OccupationalHealthcare parsed");
+
       return occupationalHealthcareEntry;
     default:
       throw new Error(`Unknown entry type: ${obj.type}`);

@@ -26,6 +26,7 @@ patientRouter.get("/:id", (req, res) => {
 });
 
 patientRouter.post("/:id/entries", (req, res) => {
+  console.log(req.body);
   const newEntry = toNewEntry(req.body);
   const patientWithAddedEntry = patientsService.addEntry(
     req.params.id,
@@ -34,7 +35,7 @@ patientRouter.post("/:id/entries", (req, res) => {
   if (!patientWithAddedEntry) {
     res.status(404).send({ error: "Patient not found" });
   }
-  res.send(patientWithAddedEntry);
+  res.send(newEntry);
 });
 
 export default patientRouter;

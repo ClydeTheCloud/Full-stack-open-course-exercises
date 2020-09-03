@@ -8,21 +8,18 @@ import {
   List,
   Icon,
 } from "semantic-ui-react";
-import { useParams } from "react-router-dom";
 
 import { useStateValue, newPatientInfo } from "../state";
 import { apiBaseUrl } from "../constants";
 import { Patient } from "../types";
 import EntryComponent from "./Entries";
 
-interface PatientPageParams {
-  id: string;
-}
+type Props = {
+  patientId: string;
+};
 
-export const PatientPage: React.FC = () => {
+const PatientInfo: React.FC<Props> = ({ patientId }) => {
   const [{ loadedPatientsInfo }, dispatch] = useStateValue();
-
-  const params = useParams<PatientPageParams>();
 
   const fetchPatientInfo = async (id: string) => {
     const { data: patientInfo } = await axios.get<Patient>(
@@ -33,10 +30,10 @@ export const PatientPage: React.FC = () => {
 
   const getPatientInfo = () => {
     const infoFromCache = Object.values(loadedPatientsInfo).find(
-      (p) => p.id === params.id
+      (p) => p.id === patientId
     );
     if (!infoFromCache) {
-      fetchPatientInfo(params.id);
+      fetchPatientInfo(patientId);
     }
     return infoFromCache;
   };
@@ -96,3 +93,5 @@ export const PatientPage: React.FC = () => {
     </Container>
   );
 };
+
+export default PatientInfo;
